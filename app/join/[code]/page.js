@@ -107,7 +107,7 @@ export default function GamePage({ params }) {
       <h1 className="pos-title-game">Ahorcado Multiplayer</h1>
       
       <div className="room-code-container">
-        <span className="room-code-label">CÓDIGO DE SALA:</span>
+        <span className="room-code-label">CÓDIGO DE SALA</span>
         <span className="room-code-value">{code?.toUpperCase()}</span>
       </div>
 

@@ -240,14 +240,16 @@ body, html {
 
 .room-code-container {
   position: absolute;
-  top: 70px;
-  left: 45px;
+  top: 36px; 
+  left: 50%;
+  transform: translateX(-50%); /* Esto lo centra perfecto */
   display: flex;
-  gap: 5px;
+  flex-direction: column; /* Label arriba, código abajo */
+  align-items: center;
   font-family: 'Special Elite', cursive;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   color: var(--ink-color);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* --- 8. ANIMACIONES Y OTROS --- */

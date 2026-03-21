@@ -1,0 +1,268 @@
+/* app/style/styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Special+Elite&display=swap');
+
+/* --- 1. VARIABLES Y RESET --- */
+:root {
+  --paper-color: #fcfaf2;
+  --line-color: #d1e4e8;
+  --ink-color: #2c3e50;
+  --shadow-color: #000000;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #d6d3c9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Special Elite', cursive;
+}
+
+/* --- 2. CONTENEDORES PRINCIPALES --- */
+.paper-container {
+  background-color: var(--paper-color);
+  background-image: 
+    linear-gradient(90deg, transparent 40px, #abced4 40px, #abced4 42px, transparent 42px),
+    linear-gradient(var(--line-color) .1em, transparent .1em);
+  background-size: 100% 1.5em;
+  width: 90vw;
+  max-width: 500px;
+  height: 85vh;
+  padding: 40px 25px;
+  box-shadow: 10px 10px 20px rgba(0,0,0,0.15);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 2px;
+  transform: rotate(-1deg);
+}
+/* --- CONTENEDOR DE BOTONES (Eje 0,0) --- */
+.center-axis {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* CENTRADO HORIZONTAL */
+  justify-content: center; /* CENTRADO VERTICAL */
+  gap: 30px; /* Separación generosa entre botones */
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Ajuste de los botones para que no se estiren */
+.btn-generate, .btn-join {
+  width: 280px;
+  max-width: 80vw; /* Para que no se salga en celulares muy chicos */
+  display: block;
+  margin: 0 auto;
+}
+
+/* Asegurar que el input de la landing no se pegue al margen */
+.center-axis .input-palabra {
+  max-width: 250px;
+  margin-bottom: 0;
+}
+
+/* --- 3. TIPOGRAFÍAS Y TÍTULOS --- */
+.font-handwriting {
+  font-family: 'Indie Flower', cursive;
+  text-align: center;
+  color: var(--ink-color);
+}
+
+/* Título de la Landing y Apartados */
+.title-main, .pos-title {
+  font-family: 'Special Elite', cursive;
+  text-transform: uppercase;
+  color: var(--ink-color);
+  text-align: center;
+  margin-top: -12%;
+  line-height: 1;
+  letter-spacing: -1px;
+  text-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+}
+
+.title-main { font-size: 3.5rem; word-spacing: 5px; }
+.pos-title { font-size: 3.5rem; letter-spacing: -2px; }
+
+/* --- 4. INPUTS Y FORMULARIOS --- */
+.pos-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+.input-palabra {
+  font-family: 'Indie Flower', cursive;
+  font-size: 3.5rem; 
+  background: transparent;
+  border: none;
+  border-bottom: 3px dashed var(--ink-color);
+  text-align: center;
+  outline: none;
+  width: 100%;
+  color: var(--ink-color);
+  letter-spacing: 8px;
+  /* Reset para iOS zoom */
+  font-size: 16px !important; 
+}
+
+.input-palabra::placeholder {
+  color: rgba(44, 62, 80, 0.3);
+  font-size: 1.2rem;
+  letter-spacing: 0px;
+}
+
+/* --- 5. BOTONES Y ACCIONES --- */
+.key-btn {
+  background: white;
+  border: 3px solid var(--ink-color);
+  color: var(--ink-color);
+  font-family: 'Special Elite', cursive;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 5px 5px 0px var(--shadow-color);
+  transition: all 0.1s;
+  position: relative;
+}
+
+.key-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0px var(--shadow-color);
+}
+
+.key-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0px var(--shadow-color);
+}
+
+.btn-generate, .btn-join { width: 280px; }
+.btn-generate { font-size: 1.4rem !important; padding: 18px !important; }
+.btn-join { 
+  font-size: 1.2rem !important; 
+  padding: 14px !important; 
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- 6. TECLADO Y JUEGO --- */
+.teclado-grid-fixed {
+  display: grid;
+  grid-template-columns: repeat(8, 45px);
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+}
+
+.key-btn-small-pro {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Special Elite', cursive;
+  font-size: 1.1rem;
+  border: 2px solid var(--ink-color);
+  background: white;
+  box-shadow: 4px 4px 0px #000;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+/* Estados del teclado */
+.key-wrong-used {
+  background-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  box-shadow: 1px 1px 0px #000 !important;
+  transform: translate(2px, 2px);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.key-correct-used {
+  background-color: #cbd5e1 !important;
+  color: var(--ink-color);
+  box-shadow: 1px 1px 0px #000 !important;
+  transform: translate(2px, 2px);
+}
+/* Contenedor de la fila final de la Z */
+.fila-final-centrada {
+  grid-column: 1 / -1; /* Ocupa las 8 columnas de ancho */
+  display: flex;
+  justify-content: center; /* CENTRADO EN EJE X */
+  width: 100%;
+  margin-top: 5px; /* Un poco de aire respecto a la fila de arriba */
+}
+
+/* Asegurar que el grid-fixed no tenga comportamientos extraños */
+.teclado-grid-fixed {
+  display: grid;
+  grid-template-columns: repeat(8, 45px);
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- 7. ELEMENTOS DEL JUEGO --- */
+.ahorcado-container {
+  margin-top: -30px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.guess-lines-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  font-family: 'Indie Flower', cursive;
+  font-size: 2.5rem;
+  color: var(--ink-color);
+}
+
+.guess-line {
+  border-bottom: 3px solid var(--ink-color);
+  min-width: 20px;
+  text-align: center;
+}
+
+.room-code-container {
+  position: absolute;
+  top: 70px;
+  left: 45px;
+  display: flex;
+  gap: 5px;
+  font-family: 'Special Elite', cursive;
+  font-size: 0.7rem;
+  color: var(--ink-color);
+  opacity: 0.7;
+}
+
+/* --- 8. ANIMACIONES Y OTROS --- */
+.fade-in { animation: fadeIn 0.8s ease-out forwards; }
+.animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.no-zoom-area { touch-action: none; user-select: none; }
+
+@media (max-height: 700px) {
+  .paper-container { padding: 20px 15px; height: 90vh; }
+  h1 { font-size: 2.8rem; }
+  svg { height: 140px; }
+}

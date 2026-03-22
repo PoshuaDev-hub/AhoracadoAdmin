@@ -1,47 +1,61 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase"; // Importamos tu cliente profesional
 
 export default function CreateGame() {
   const [word, setWord] = useState("");
   const [showError, setShowError] = useState(false);
   const router = useRouter();
 
+  // Función para generar un código de sala aleatorio (Lo que antes hacía Python)
+  const generateRoomCode = () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  };
+
   const handleStart = async () => {
+    // Validación de longitud
     if (word.length < 3) {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
       return;
     }
-    
+
     try {
-      // 1. Enviamos la palabra al backend de Python
-      // Usamos 127.0.0.1 para evitar problemas de DNS local
-        const response = await fetch(`http://127.0.0.1:8000/game/create?word=${word}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" }
-      });
+      const roomCode = generateRoomCode();
 
-      if (!response.ok) throw new Error("Error en el servidor");
+      // Insertamos directamente en la tabla 'games' de Supabase
+      const { error } = await supabase
+        .from('games')
+        .insert([
+          { 
+            room_code: roomCode, 
+            secret_word: word.toUpperCase(),
+            status: 'waiting',
+            guessed_letters: [] // Inicializamos el array de letras intentadas
+          }
+        ]);
 
-      const data = await response.json();
-      
-      // 2. Si el backend nos devuelve el código, navegamos a la sala
-      if (data.room_code) {
-        router.push(`/join/${data.room_code}`);
-      } else {
-        alert("El servidor no devolvió un código de sala");
-      }
+      if (error) throw error;
+
+      // Navegamos a la sala recién creada
+      router.push(`/join/${roomCode}`);
+
     } catch (error) {
-      console.error("Error:", error);
-      alert("No se pudo conectar con el backend. ¿Está uvicorn encendido?");
+      console.error("Error al crear la sala:", error.message);
+      alert("No se pudo crear la sala. Revisa tu conexión a Supabase.");
     }
   };
 
   return (
     <main className="paper-container fade-in no-zoom-area">
       <div className="pos-title">
-        <h2>Palabra <br /> Secreta</h2>
+        <h2 className="title-main" style={{ fontSize: '3rem' }}>Palabra <br /> Secreta</h2>
       </div>
       
       <div className="pos-input">

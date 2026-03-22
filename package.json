@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev:next": "next dev",
-    "dev:python": "uvicorn main:app --app-dir backend --reload --port 8000",    
+    "dev:python": "uvicorn main:app --app-dir backend --reload --port 8000",
     "dev": "concurrently \"npm run dev:next\" \"npm run dev:python\"",
     "build": "next build",
     "start": "next start",
@@ -14,7 +14,7 @@
   "author": "PoshuaDev",
   "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/supabase-js": "^2.99.3",
     "next": "^16.2.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

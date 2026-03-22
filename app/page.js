@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+// Importamos el cliente de Supabase (asegúrate de que la ruta sea correcta)
+import { supabase } from "@/lib/supabase"; 
 
 export default function Landing() {
   const [showInput, setShowInput] = useState(false);
@@ -9,13 +11,19 @@ export default function Landing() {
   const [isValidRoom, setIsValidRoom] = useState(false);
   const router = useRouter();
 
-  // Validación en tiempo real contra tu backend de Python
+  // Validación en tiempo real conectando directamente a Supabase
   useEffect(() => {
     const checkRoom = async () => {
       if (code.length === 6) {
         try {
-          const res = await fetch(`http://127.0.0.1:8000/game/${code.toUpperCase()}`);
-          if (res.ok) {
+          // Consultamos la tabla 'games' buscando el código
+          const { data, error } = await supabase
+            .from('games')
+            .select('room_code')
+            .eq('room_code', code.toUpperCase())
+            .single();
+
+          if (data && !error) {
             setIsValidRoom(true);
           } else {
             setIsValidRoom(false);
@@ -45,7 +53,6 @@ export default function Landing() {
 
       <div className="center-axis w-full">
         {!showInput ? (
-          /* VISTA 1: El GAP del CSS (40px) separará estos dos automáticamente */
           <>
             <Link href="/create">
               <button className="key-btn btn-generate">GENERAR PARTIDA</button>
@@ -59,7 +66,6 @@ export default function Landing() {
             </button>
           </>
         ) : (
-          /* VISTA 2: El GAP de .animate-fade-in (30px) definido en CSS separará estos tres */
           <div className="animate-fade-in w-full flex flex-col items-center">
             <input
               type="text"

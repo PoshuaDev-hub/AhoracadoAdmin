@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  images: { unoptimized: true },
   basePath: '/AhorcadoMultiplayer',
-  trailingSlash: true, 
+  assetPrefix: '/AhorcadoMultiplayer', 
+  images: { unoptimized: true },
+  trailingSlash: true,
 };
 
 export default nextConfig;

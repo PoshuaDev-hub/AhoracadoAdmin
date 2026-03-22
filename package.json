@@ -8,7 +8,8 @@
     "dev": "concurrently \"npm run dev:next\" \"npm run dev:python\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "next build && gh-pages -d out"
   },
   "keywords": [],
   "author": "PoshuaDev",
@@ -20,6 +21,7 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "gh-pages": "^6.3.0"
   }
 }

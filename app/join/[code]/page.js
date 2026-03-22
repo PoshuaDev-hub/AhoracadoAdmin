@@ -1,11 +1,13 @@
 "use client";
 import { useState, useEffect, use } from "react";
-import { supabase } from "../../lib/supabase"; // Asegúrate de tener este archivo creado
+import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabase";
 import Teclado from "../../components/teclado";
 import Ahorcado from "../../components/ahorcado";
 
 export default function GamePage({ params }) {
   const { code } = use(params);
+  const router = useRouter();
   const [word, setWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,15 +18,14 @@ export default function GamePage({ params }) {
     url: typeof window !== "undefined" ? window.location.href : "",
   };
 
-  // 1. EFECTO: Carga inicial de la palabra (vía tu API de Python)
+  // 1. Carga inicial
   useEffect(() => {
     const fetchGame = async () => {
       try {
         const res = await fetch(`http://127.0.0.1:8000/game/${code}`);
         if (!res.ok) throw new Error("No se halló la partida");
         const data = await res.json();
-        setWord(data.word || data.palabra || ""); 
-        // Sincronizamos letras ya adivinadas si la partida ya empezó
+        setWord(data.word || ""); 
         setGuessedLetters(data.guessed_letters || []);
       } catch (err) {
         console.error("Error cargando juego:", err);
@@ -35,17 +36,15 @@ export default function GamePage({ params }) {
     if (code) fetchGame();
   }, [code]);
 
-  // 2. EFECTO: Suscripción Realtime (vía Cliente Supabase JS)
+  // 2. Suscripción Realtime
   useEffect(() => {
     if (!code) return;
-
     const channel = supabase
       .channel(`room-${code}`)
       .on(
         'postgres_changes', 
         { event: 'UPDATE', schema: 'public', table: 'games', filter: `room_code=eq.${code}` },
         (payload) => {
-          // Si el cambio viene de la DB, actualizamos las letras en pantalla
           if (payload.new.guessed_letters) {
             setGuessedLetters(payload.new.guessed_letters);
           }
@@ -53,27 +52,35 @@ export default function GamePage({ params }) {
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [code]);
 
   // Lógica de cálculo
-  const errors = guessedLetters.filter(l => !word.toLowerCase().includes(l)).length;
-  const isWinner = word.length > 0 && word.split("").every(l => guessedLetters.includes(l.toLowerCase()));
+  const errors = guessedLetters.filter(l => !word.toLowerCase().includes(l.toLowerCase())).length;
+  // Comprobamos si todas las letras de la palabra secreta están enguessedLetters
+  const isWinner = word.length > 0 && word.toLowerCase().split("").every(l => guessedLetters.includes(l.toLowerCase()));
   const isLoser = errors >= 6;
 
-  // 3. FUNCIÓN: Enviar la letra presionada al Backend
-  const onKeyPress = async (letter) => {
-    if (guessedLetters.includes(letter) || isWinner || isLoser) return;
+  // 3. REDIRECCIÓN ULTRA RÁPIDA
+  useEffect(() => {
+    if (isWinner || isLoser) {
+      const status = isWinner ? "win" : "lose";
+      // Reducimos a 300ms para una respuesta casi instantánea pero fluida
+      const timer = setTimeout(() => {
+        router.push(`/result?status=${status}&code=${code}&word=${word}`);
+      }, 300); 
+      return () => clearTimeout(timer);
+    }
+  }, [isWinner, isLoser, code, word, router]);
 
-    const newGuessed = [...guessedLetters, letter];
+  const onKeyPress = async (letter) => {
+    // Evitamos enviar si el juego ya terminó visualmente
+    if (guessedLetters.includes(letter.toLowerCase()) || isWinner || isLoser) return;
     
-    // IMPORTANTE: Aquí actualizamos el estado local para feedback inmediato
+    const newGuessed = [...guessedLetters, letter.toLowerCase()];
     setGuessedLetters(newGuessed);
 
     try {
-      // Avisamos a tu backend para que este actualice Supabase
       await fetch(`http://127.0.0.1:8000/game/${code}/guess`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -120,7 +127,9 @@ export default function GamePage({ params }) {
           {word.split("").map((letter, i) => (
             <div key={i} className="guess-line-wrapper">
               <span className="guess-letter">
-                {guessedLetters.includes(letter.toLowerCase()) ? letter.toUpperCase() : ""}
+                {guessedLetters.includes(letter.toLowerCase()) 
+                  ? letter.toUpperCase() 
+                  : "_"} 
               </span>
               <div className="underline-ink"></div>
             </div>
@@ -133,14 +142,6 @@ export default function GamePage({ params }) {
             guessedLetters={guessedLetters} 
             currentWord={word} 
           />
-        )}
-
-        {isWinner && <h2 className="text-green-700 text-3xl font-bold animate-bounce mt-4">¡VICTORIA! 🏆</h2>}
-        {isLoser && (
-          <div className="text-center mt-4">
-            <h2 className="text-red-700 text-xl font-bold uppercase">¡Has sido colgado!</h2>
-            <p className="font-handwriting text-ink">La palabra era: <span className="font-bold">{word.toUpperCase()}</span></p>
-          </div>
         )}
       </div>
 

@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import database
 import uuid
+import httpx  # IMPORTANTE: Asegúrate de tenerlo para el DELETE
 
 app = FastAPI()
 
@@ -40,3 +41,17 @@ async def update_guess(code: str, payload: dict):
     success = database.update_supabase_game(code, guessed_letters, errors)
     if success: return {"status": "ok"}
     raise HTTPException(status_code=400, detail="Error al actualizar")
+
+# NUEVO ENDPOINT: Para borrar la partida al finalizar
+@app.delete("/game/{code}")
+async def delete_game(code: str):
+    # Usamos las variables de configuración que ya tienes en database.py
+    url = f"{database.SUPABASE_URL}/rest/v1/games?room_code=eq.{code}"
+    
+    async with httpx.AsyncClient() as client: # Usamos AsyncClient por ser FastAPI
+        response = await client.delete(url, headers=database.headers)
+        
+        if response.status_code in [200, 204]:
+            return {"status": "deleted"}
+            
+    raise HTTPException(status_code=400, detail="No se pudo borrar el registro")

@@ -1,7 +1,9 @@
 /* app/style/styles.css */
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Special+Elite&display=swap');
 
-/* --- 1. VARIABLES Y RESET --- */
+/* ============================================================
+   1. VARIABLES Y RESET
+   ============================================================ */
 :root {
   --paper-color: #fcfaf2;
   --line-color: #d1e4e8;
@@ -22,10 +24,12 @@ body, html {
   font-family: 'Special Elite', cursive;
 }
 
-/* --- 2. CONTENEDORES PRINCIPALES --- */
+/* ============================================================
+   2. CONTENEDORES PRINCIPALES
+   ============================================================ */
 .paper-container {
   background-color: var(--paper-color);
-  background-image: 
+  background-image:
     linear-gradient(90deg, transparent 40px, #abced4 40px, #abced4 42px, transparent 42px),
     linear-gradient(var(--line-color) .1em, transparent .1em);
   background-size: 100% 1.5em;
@@ -42,54 +46,76 @@ body, html {
   border-radius: 2px;
   transform: rotate(-1deg);
 }
-/* --- CONTENEDOR DE BOTONES (Eje 0,0) --- */
+
+/* ============================================================
+   3. CONTENEDOR CENTRAL (fusión de todas las declaraciones)
+   ============================================================ */
 .center-axis {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  align-items: center; /* CENTRADO HORIZONTAL */
-  justify-content: center; /* CENTRADO VERTICAL */
-  gap: 30px; /* Separación generosa entre botones */
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
   width: 100%;
-  margin: 0 auto;
+  margin-top: 20px;
 }
 
-/* Ajuste de los botones para que no se estiren */
-.btn-generate, .btn-join {
+/* Botones dentro del .center-axis: ancho fijo y centrado */
+.btn-generate,
+.btn-join {
   width: 280px;
-  max-width: 80vw; /* Para que no se salga en celulares muy chicos */
+  max-width: 80vw;
   display: block;
   margin: 0 auto;
 }
 
-/* Asegurar que el input de la landing no se pegue al margen */
+/* Input de palabra en la landing */
 .center-axis .input-palabra {
   max-width: 250px;
   margin-bottom: 0;
 }
 
-/* --- 3. TIPOGRAFÍAS Y TÍTULOS --- */
+/* ============================================================
+   4. TIPOGRAFÍAS Y TÍTULOS
+   ============================================================ */
 .font-handwriting {
   font-family: 'Indie Flower', cursive;
   text-align: center;
   color: var(--ink-color);
 }
 
-/* Título de la Landing y Apartados */
-.title-main, .pos-title {
+/* Título principal — fusión de todas las declaraciones */
+.title-main {
   font-family: 'Special Elite', cursive;
+  font-size: 3.5rem;
+  word-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--ink-color);
+  text-align: center;
+  margin-top: 40px !important;
+  margin-bottom: 0px !important;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  text-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+}
+
+/* Título de apartados (pos-title) */
+.pos-title {
+  font-family: 'Special Elite', cursive;
+  font-size: 3.5rem;
   text-transform: uppercase;
   color: var(--ink-color);
   text-align: center;
   margin-top: -12%;
   line-height: 1;
-  letter-spacing: -1px;
+  letter-spacing: -2px;
   text-shadow: 3px 3px 0px rgba(0,0,0,0.1);
 }
 
-.title-main { font-size: 3.5rem; word-spacing: 5px; }
-.pos-title { font-size: 3.5rem; letter-spacing: -2px; }
-
-/* --- 4. INPUTS Y FORMULARIOS --- */
+/* ============================================================
+   5. INPUTS Y FORMULARIOS
+   ============================================================ */
 .pos-input {
   display: flex;
   flex-direction: column;
@@ -104,7 +130,7 @@ body, html {
 
 .input-palabra {
   font-family: 'Indie Flower', cursive;
-  font-size: 3.5rem; 
+  font-size: 16px !important; /* Reset para evitar zoom en iOS */
   background: transparent;
   border: none;
   border-bottom: 3px dashed var(--ink-color);
@@ -113,8 +139,6 @@ body, html {
   width: 100%;
   color: var(--ink-color);
   letter-spacing: 8px;
-  /* Reset para iOS zoom */
-  font-size: 16px !important; 
 }
 
 .input-palabra::placeholder {
@@ -123,7 +147,24 @@ body, html {
   letter-spacing: 0px;
 }
 
-/* --- 5. BOTONES Y ACCIONES --- */
+/* INPUT que actúa visualmente como botón (modo unirse) */
+input.btn-join {
+  background-color: #ffffff;
+  cursor: text;
+  letter-spacing: 4px;
+  font-weight: bold;
+  transition: border-color 0.3s ease;
+}
+
+input.btn-join:focus {
+  border-color: var(--ink-color);
+  background-color: #fffdf5;
+  box-shadow: 6px 6px 0px var(--shadow-color);
+}
+
+/* ============================================================
+   6. BOTONES Y ACCIONES
+   ============================================================ */
 .key-btn {
   background: white;
   border: 3px solid var(--ink-color);
@@ -147,20 +188,70 @@ body, html {
   box-shadow: 2px 2px 0px var(--shadow-color);
 }
 
-.btn-generate, .btn-join { width: 280px; }
-.btn-generate { font-size: 1.4rem !important; padding: 18px !important; }
-.btn-join { 
-  font-size: 1.2rem !important; 
-  padding: 14px !important; 
+.key-btn:disabled {
+  transform: none !important;
+  pointer-events: none;
+}
+
+.btn-generate {
+  font-size: 1.4rem !important;
+  padding: 18px !important;
+}
+
+.btn-join {
+  font-size: 1.2rem !important;
+  padding: 14px !important;
   background-color: rgba(255, 255, 255, 0.7);
 }
 
-/* --- 6. TECLADO Y JUEGO --- */
+/* Estado GRIS (inactivo / sala no encontrada) */
+.bg-gray-200 {
+  background-color: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  color: #94a3b8 !important;
+  box-shadow: 3px 3px 0px #cbd5e1 !important;
+  cursor: not-allowed;
+}
+
+/* Estado VERDE (sala encontrada) */
+.bg-green-500 {
+  background-color: #22c55e !important;
+  border-color: #166534 !important;
+  color: #ffffff !important;
+  box-shadow: 5px 5px 0px #14532d !important;
+  text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+}
+
+.scale-105 {
+  transform: scale(1.05);
+}
+
+/* Botón ATRÁS de la landing */
+.btn-atras-landing {
+  width: 160px !important;
+  height: 45px !important;
+  margin-top: 15px;
+  font-size: 0.85rem;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.btn-atras-landing:hover {
+  opacity: 1;
+  color: var(--ink-color);
+}
+
+/* ============================================================
+   7. TECLADO Y JUEGO
+   ============================================================ */
 .teclado-grid-fixed {
   display: grid;
   grid-template-columns: repeat(8, 45px);
   gap: 10px;
   justify-content: center;
+  align-items: center;
   width: 100%;
 }
 
@@ -179,7 +270,7 @@ body, html {
   transition: all 0.1s;
 }
 
-/* Estados del teclado */
+/* Estado: letra incorrecta usada */
 .key-wrong-used {
   background-color: #e2e8f0 !important;
   color: #94a3b8 !important;
@@ -189,31 +280,26 @@ body, html {
   opacity: 0.7;
 }
 
+/* Estado: letra correcta usada */
 .key-correct-used {
   background-color: #cbd5e1 !important;
   color: var(--ink-color);
   box-shadow: 1px 1px 0px #000 !important;
   transform: translate(2px, 2px);
 }
-/* Contenedor de la fila final de la Z */
+
+/* Fila final de la Z centrada */
 .fila-final-centrada {
-  grid-column: 1 / -1; /* Ocupa las 8 columnas de ancho */
+  grid-column: 1 / -1;
   display: flex;
-  justify-content: center; /* CENTRADO EN EJE X */
-  width: 100%;
-  margin-top: 5px; /* Un poco de aire respecto a la fila de arriba */
-}
-
-/* Asegurar que el grid-fixed no tenga comportamientos extraños */
-.teclado-grid-fixed {
-  display: grid;
-  grid-template-columns: repeat(8, 45px);
-  gap: 10px;
   justify-content: center;
-  align-items: center;
+  width: 100%;
+  margin-top: 5px;
 }
 
-/* --- 7. ELEMENTOS DEL JUEGO --- */
+/* ============================================================
+   8. ELEMENTOS DEL JUEGO
+   ============================================================ */
 .ahorcado-container {
   margin-top: -30px;
   display: flex;
@@ -240,11 +326,11 @@ body, html {
 
 .room-code-container {
   position: absolute;
-  top: 36px; 
+  top: 36px;
   left: 50%;
-  transform: translateX(-50%); /* Esto lo centra perfecto */
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column; /* Label arriba, código abajo */
+  flex-direction: column;
   align-items: center;
   font-family: 'Special Elite', cursive;
   font-size: 0.8rem;
@@ -252,17 +338,104 @@ body, html {
   opacity: 0.8;
 }
 
-/* --- 8. ANIMACIONES Y OTROS --- */
-.fade-in { animation: fadeIn 0.8s ease-out forwards; }
-.animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+/* ============================================================
+   9. ANIMACIONES
+   ============================================================ */
+.fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.no-zoom-area { touch-action: none; user-select: none; }
+/* Modo "unirse" — fusión de todas las declaraciones */
+.animate-fade-in {
+  animation: slideDown 0.4s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 40px;
+}
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Botones dentro del modo "unirse" */
+.animate-fade-in .key-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.animate-fade-in button:last-child {
+  min-width: 120px;
+}
+
+.transition-all {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.no-zoom-area {
+  touch-action: none;
+  user-select: none;
+}
+
+/* ============================================================
+   10. PÁGINA DE RESULTADOS
+   ============================================================ */
+.result-status-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -15%;
+  width: 100%;
+}
+
+.result-title {
+  font-size: 3.5rem !important;
+  margin-bottom: 0px;
+  line-height: 1.1;
+}
+
+.result-subtitle {
+  font-size: 2rem;
+  margin-top: 5px;
+  opacity: 0.9;
+}
+
+.result-actions-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 5%;
+}
+
+.revancha-text {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  font-family: 'Special Elite', cursive;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.btn-result-volver {
+  width: 300px;
+  max-width: 80vw;
+  font-size: 1.4rem !important;
+  padding: 16px !important;
+}
+
+/* ============================================================
+   11. MEDIA QUERIES
+   ============================================================ */
 @media (max-height: 700px) {
   .paper-container { padding: 20px 15px; height: 90vh; }
   h1 { font-size: 2.8rem; }

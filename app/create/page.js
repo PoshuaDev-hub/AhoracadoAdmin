@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase"; // Importamos tu cliente profesional
+import { supabase } from "../lib/supabase";
 
 export default function CreateGame() {
   const [word, setWord] = useState("");

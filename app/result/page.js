@@ -1,8 +1,9 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase"; // Importación de tu cliente
+import { supabase } from "../lib/supabase"; 
+import { Suspense } from "react";
 
-export default function ResultPage() {
+function ResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -13,13 +14,10 @@ export default function ResultPage() {
   const handleVolver = async () => {
     if (code) {
       try {
-        // Borramos la partida de Supabase directamente
-        const { error } = await supabase
+        await supabase
           .from('games')
           .delete()
           .eq('room_code', code.toUpperCase());
-
-        if (error) throw error;
       } catch (err) {
         console.error("Error al limpiar DB:", err.message);
       }
@@ -28,8 +26,7 @@ export default function ResultPage() {
   };
 
   return (
-    <main className="paper-container fade-in">
-      {/* GRUPO SUPERIOR: El mensaje de estado */}
+    <>
       <div className="result-status-group">
         {status === "win" ? (
           <>
@@ -52,12 +49,10 @@ export default function ResultPage() {
         )}
       </div>
 
-      {/* GRUPO INFERIOR: Texto de revancha arriba y botón debajo */}
       <div className="result-actions-group">
         <p className="revancha-text">
           ¿Quieres revancha? Crea una sala nueva.
         </p>
-
         <button 
           onClick={handleVolver} 
           className="key-btn btn-result-volver"
@@ -65,6 +60,16 @@ export default function ResultPage() {
            VOLVER AL INICIO
         </button>
       </div>
+    </>
+  );
+}
+
+export default function ResultPage() {
+  return (
+    <main className="paper-container fade-in">
+      <Suspense fallback={<div className="font-handwriting">Cargando resultados...</div>}>
+        <ResultContent />
+      </Suspense>
     </main>
   );
 }

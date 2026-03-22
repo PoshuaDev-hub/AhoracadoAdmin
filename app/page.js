@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 // Importamos el cliente de Supabase (asegúrate de que la ruta sea correcta)
-import { supabase } from "@/lib/supabase"; 
+import { supabase } from "../app/lib/supabase";
 
 export default function Landing() {
   const [showInput, setShowInput] = useState(false);

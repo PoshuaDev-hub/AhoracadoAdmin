@@ -1,31 +1,34 @@
 "use client";
-import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabase";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation"; 
+import { supabase } from "../../lib/supabase"; 
 import Teclado from "../../components/teclado";
 import Ahorcado from "../../components/ahorcado";
 
-export default function GamePage({ params }) {
-  const { code } = use(params);
+export default function GamePage() {
+  const params = useParams(); 
+  const code = params?.code?.toUpperCase();
   const router = useRouter();
+  
   const [word, setWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const shareData = {
     title: "Ahorcado Multiplayer",
-    text: `¡Te desafío en mi partida de Ahorcado! Código: ${code?.toUpperCase()}`,
+    text: `¡Te desafío en mi partida de Ahorcado! Código: ${code}`,
     url: typeof window !== "undefined" ? window.location.href : "",
   };
 
-  // 1. CARGA INICIAL (Directo de Supabase)
+  // 1. CARGA INICIAL
   useEffect(() => {
     const fetchGame = async () => {
+      if (!code) return;
       try {
         const { data, error } = await supabase
           .from('games')
           .select('secret_word, guessed_letters')
-          .eq('room_code', code.toUpperCase())
+          .eq('room_code', code)
           .single();
 
         if (error || !data) throw new Error("No se halló la partida");
@@ -34,15 +37,15 @@ export default function GamePage({ params }) {
         setGuessedLetters(data.guessed_letters || []);
       } catch (err) {
         console.error("Error cargando juego:", err);
-        router.push("/"); // Si falla, volvemos al inicio
+        router.push("/"); 
       } finally {
         setLoading(false);
       }
     };
-    if (code) fetchGame();
+    fetchGame();
   }, [code, router]);
 
-  // 2. SUSCRIPCIÓN REALTIME (Ya la tenías bien, pero aseguramos el canal)
+  // 2. SUSCRIPCIÓN REALTIME
   useEffect(() => {
     if (!code) return;
     
@@ -54,11 +57,10 @@ export default function GamePage({ params }) {
           event: 'UPDATE', 
           schema: 'public', 
           table: 'games', 
-          filter: `room_code=eq.${code.toUpperCase()}` 
+          filter: `room_code=eq.${code}` 
         },
         (payload) => {
-          // Si otro jugador marca una letra, se actualiza en tu pantalla al instante
-          if (payload.new.guessed_letters) {
+          if (payload.new && payload.new.guessed_letters) {
             setGuessedLetters(payload.new.guessed_letters);
           }
         }
@@ -68,7 +70,7 @@ export default function GamePage({ params }) {
     return () => { supabase.removeChannel(channel); };
   }, [code]);
 
-  // Lógica de cálculo (Mantenemos tu lógica de ingeniería)
+  // Lógica de cálculo
   const errors = guessedLetters.filter(l => !word.toLowerCase().includes(l.toLowerCase())).length;
   const isWinner = word.length > 0 && word.toLowerCase().split("").every(l => guessedLetters.includes(l.toLowerCase()));
   const isLoser = errors >= 6;
@@ -84,23 +86,19 @@ export default function GamePage({ params }) {
     }
   }, [isWinner, isLoser, code, word, router]);
 
-  // 4. ACTUALIZAR LETRAS (En lugar de PATCH a Python, UPDATE a Supabase)
+  // 4. ACTUALIZAR LETRAS
   const onKeyPress = async (letter) => {
     const lowerLetter = letter.toLowerCase();
     if (guessedLetters.includes(lowerLetter) || isWinner || isLoser) return;
     
     const newGuessed = [...guessedLetters, lowerLetter];
-    
-    // Actualización optimista (se ve en tu pantalla de inmediato)
     setGuessedLetters(newGuessed);
 
     try {
-      const { error } = await supabase
+      await supabase
         .from('games')
         .update({ guessed_letters: newGuessed })
-        .eq('room_code', code.toUpperCase());
-
-      if (error) throw error;
+        .eq('room_code', code);
     } catch (err) {
       console.error("Error enviando letra:", err);
     }
@@ -127,7 +125,7 @@ export default function GamePage({ params }) {
       
       <div className="room-code-container">
         <span className="room-code-label">CÓDIGO DE SALA</span>
-        <span className="room-code-value font-bold">{code?.toUpperCase()}</span>
+        <span className="room-code-value font-bold">{code}</span>
       </div>
 
       <div className="flex-grow flex flex-col items-center w-full mt-4">
